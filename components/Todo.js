@@ -1,7 +1,14 @@
+import { globalCounters } from "../components/GlobalCounters.js";
+
 class Todo {
-  constructor(data, selector) {
+  constructor(data, selector, updateCounterText) {
     this._data = data;
     this._templateElement = document.querySelector(selector);
+
+    this._updateCounterText = updateCounterText;
+
+    this.todoCounterX = 0;
+    this.todoCounterY = 0;
   }
 
   _createCheckboxEl() {
@@ -26,12 +33,33 @@ class Todo {
   _setEventListeners() {
     this.todoCheckboxEl.addEventListener("change", () => {
       this._data.completed = this.todoCheckboxEl.checked;
+      this._updateTasksCompleted();
+      this._updateCounterText();
     });
 
     this.todoDeleteBtn.addEventListener("click", () => {
       this._todoElement.remove();
+      if (this._data.completed) {
+        globalCounters.completedTasks--;
+      }
+      globalCounters.totalTasks--;
+      this._updateCounterText();
     });
   }
+
+  _updateTasksCompleted() {
+    if (this._data.completed) {
+      globalCounters.completedTasks++;
+    } else {
+      globalCounters.completedTasks--;
+    }
+  }
+
+  // updateCounterText(completedTasks, totalTasks) {
+  //   this.todoCounterX += completedTasks;
+  //   this.todoCounterY += totalTasks;
+  //   this.counterText.textContent = `Showing ${this.todoCounterX} out of ${this.todoCounterY} completed`;
+  // }
 
   getView() {
     this._todoElement = this._templateElement.content

@@ -2,12 +2,14 @@ import { v4 as uuidv4 } from "https://jspm.dev/uuid";
 import { initialTodos, validationConfig } from "../utils/constants.js";
 import Todo from "../components/Todo.js";
 import FormValidator from "../components/FormValidator.js";
+import { globalCounters } from "../components/GlobalCounters.js";
 
 const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopup = document.querySelector("#add-todo-popup");
 const addTodoForm = addTodoPopup.querySelector(".popup__form");
 const addTodoCloseBtn = addTodoPopup.querySelector(".popup__close");
 const todosList = document.querySelector(".todos__list");
+const counterText = document.querySelector(".counter__text");
 
 const openModal = (modal) => {
   modal.classList.add("popup_visible");
@@ -19,8 +21,12 @@ const closeModal = (modal) => {
 
 // The logic in this function should all be handled in the Todo class.
 const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template");
+  const todo = new Todo(data, "#todo-template", updateCounterText);
   const todoElement = todo.getView();
+
+  //update counter text
+  globalCounters.totalTasks++;
+  updateCounterText();
 
   return todoElement;
 };
@@ -55,6 +61,10 @@ initialTodos.forEach((item) => {
   const todo = generateTodo(item);
   todosList.append(todo);
 });
+
+function updateCounterText() {
+  counterText.textContent = `Showing ${globalCounters.completedTasks} out of ${globalCounters.totalTasks} completed`;
+}
 
 const todoFormValidator = new FormValidator(validationConfig, addTodoForm);
 todoFormValidator.enableValidation();
