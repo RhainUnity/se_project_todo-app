@@ -1,7 +1,9 @@
 class Todo {
-  constructor(data, selector) {
+  constructor(data, selector, updateCompleted, todoDeleted) {
     this._data = data;
     this._templateElement = document.querySelector(selector);
+    this._updateCompleted = updateCompleted;
+    this._todoDeleted = todoDeleted;
   }
 
   _createCheckboxEl() {
@@ -26,10 +28,15 @@ class Todo {
   _setEventListeners() {
     this.todoCheckboxEl.addEventListener("change", () => {
       this._data.completed = this.todoCheckboxEl.checked;
+      this._updateCompleted(this._data.completed);
     });
 
     this.todoDeleteBtn.addEventListener("click", () => {
+      if (this._data.completed) {
+        this._updateCompleted(false);
+      }
       this._todoElement.remove();
+      this._todoDeleted(false);
     });
   }
 
