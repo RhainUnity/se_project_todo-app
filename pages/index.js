@@ -12,20 +12,30 @@ const addTodoForm = document.forms["add-todo-form"];
 ///TASKS COMPLETED COUNTER
 const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
-const todoCompleted = (completed) => {
+const handleTodoCompleted = (completed) => {
   todoCounter.updateCompleted(completed);
 };
 
-const todoDeleted = (deleted) => {
+const handleTodoDeleted = (deleted) => {
   todoCounter.updateTotal(deleted);
 };
+
+///RENDER TODO
+function renderTodo(item) {
+  const todo = new Todo(
+    item,
+    "#todo-template",
+    handleTodoCompleted,
+    handleTodoDeleted
+  );
+  return todo.getView();
+}
 
 ///NEW SECTION INSTANTIATE
 const section = new Section({
   data: initialTodos,
   renderer: (item) => {
-    const todo = new Todo(item, "#todo-template", todoCompleted, todoDeleted);
-    const todoElement = todo.getView();
+    const todoElement = renderTodo(item);
     section.addItem(todoElement);
   },
   containerSelector: ".todos__list",
@@ -41,18 +51,13 @@ const addTodoPopup = new PopupWithForm("#add-todo-popup", (inputValues) => {
   const date = new Date(inputValues.date);
   date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
 
-  const todo = new Todo(
-    {
-      id,
-      name: inputValues.name,
-      date,
-      completed: false,
-    },
-    "#todo-template",
-    todoCompleted,
-    todoDeleted
-  );
-  const todoElement = todo.getView();
+  const todoItemData = {
+    id,
+    name: inputValues.name,
+    date,
+    completed: false,
+  };
+  const todoElement = renderTodo(todoItemData);
   section.addItem(todoElement);
 
   todoCounter.updateTotal(true);
