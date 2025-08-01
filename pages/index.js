@@ -20,6 +20,11 @@ const handleTodoDeleted = (deleted) => {
   todoCounter.updateTotal(deleted);
 };
 
+function createAndAddTodo(item) {
+  const todoElement = renderTodo(item);
+  section.addItem(todoElement);
+}
+
 ///RENDER TODO
 function renderTodo(item) {
   const todo = new Todo(
@@ -33,11 +38,8 @@ function renderTodo(item) {
 
 ///NEW SECTION INSTANTIATE
 const section = new Section({
-  data: initialTodos,
-  renderer: (item) => {
-    const todoElement = renderTodo(item);
-    section.addItem(todoElement);
-  },
+  items: initialTodos,
+  renderer: createAndAddTodo,
   containerSelector: ".todos__list",
 });
 
@@ -57,8 +59,8 @@ const addTodoPopup = new PopupWithForm("#add-todo-popup", (inputValues) => {
     date,
     completed: false,
   };
-  const todoElement = renderTodo(todoItemData);
-  section.addItem(todoElement);
+
+  createAndAddTodo(todoItemData);
 
   todoCounter.updateTotal(true);
 
